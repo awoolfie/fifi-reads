@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { Book, Plus, Search, BookOpen, CheckCircle, Heart, Trash2, X, Bookmark, LogOut, Loader2, Moon, Sun, Pencil, Star } from 'lucide-react';
+import { Book, Plus, Search, BookOpen, CheckCircle, Heart, Trash2, X, Bookmark, LogOut, Loader2, Moon, Sun, Pencil, Star, ArrowLeft } from 'lucide-react';
 
 // --- CONFIGURATION ---
+// Replace with your keys if using .env, but this works for now
 const supabaseUrl = 'https://zbzstfcxhsnqquvkckpc.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpienN0ZmN4aHNucXF1dmtja3BjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNzY5MzcsImV4cCI6MjA4MDk1MjkzN30.H8Up419vlrd1SxtGVi091OyDYmnzTYV9Da_sscy03wk';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -57,7 +58,8 @@ export default function App() {
     </div>
   );
 }
-// --- AUTH COMPONENT ---
+
+// --- AUTH COMPONENT (With Remember Me & Autofill) ---
 function AuthScreen({ supabase, darkMode, toggleTheme }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,7 +83,7 @@ function AuthScreen({ supabase, darkMode, toggleTheme }) {
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        setMessage('Psst...Check your email for the confirmation link~');
+        setMessage('Check your email for the confirmation link!');
       }
     } catch (error) {
       setMessage(error.message);
@@ -111,7 +113,7 @@ function AuthScreen({ supabase, darkMode, toggleTheme }) {
           </div>
           <h1 className="text-2xl font-bold">{isReset ? 'Reset Password' : 'Welcome to Fifi Reads'}</h1>
           <p className={`text-sm mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            {isReset ? 'Forgot your password? Worry not! Just enter your email to receive a reset link.' : 'Your cozy corner for tracking books.'}
+            {isReset ? 'Enter your email to receive a reset link.' : 'Your cozy corner for tracking books.'}
           </p>
         </div>
 
@@ -172,91 +174,9 @@ function AuthScreen({ supabase, darkMode, toggleTheme }) {
       </div>
     </div>
   );
-};
+}
 
-  const cardClass = darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-purple-100';
-  const inputClass = darkMode 
-    ? 'bg-slate-800 border-slate-700 text-white focus:ring-purple-500' 
-    : 'bg-slate-50 border-slate-200 text-slate-800 focus:border-purple-400';
-
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative">
-      <button 
-        onClick={toggleTheme}
-        className={`absolute top-6 right-6 p-2 rounded-full transition-all ${darkMode ? 'bg-slate-800 text-yellow-300' : 'bg-white text-purple-600 shadow-sm'}`}
-      >
-        {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-      </button>
-
-      <div className={`w-full max-w-md rounded-2xl p-8 border shadow-xl transition-all ${cardClass}`}>
-        <div className="text-center mb-8">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${darkMode ? 'bg-slate-800' : 'bg-purple-100'}`}>
-            <BookOpen className={`w-8 h-8 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-          </div>
-          <h1 className="text-2xl font-bold">{isReset ? 'Reset Password' : 'Welcome to Fifi Reads'}</h1>
-          <p className={`text-sm mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            {isReset ? 'Forgot your password? Worry not! Just enter your email to receive a reset link.' : 'Your cozy corner for tracking books.'}
-          </p>
-        </div>
-
-        <form onSubmit={handleAuth} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 opacity-80" htmlFor="email">Email</label>
-            <input 
-              id="email"
-              name="email"
-              autoComplete="email"
-              type="email" 
-              required 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              className={`w-full px-4 py-2 rounded-lg outline-none border focus:ring-2 transition-all ${inputClass}`} 
-            />
-          </div>
-          {!isReset && (
-            <div>
-              <label className="block text-sm font-medium mb-1 opacity-80" htmlFor="password">Password</label>
-              <input 
-                id="password"
-                name="password"
-                autoComplete={isLogin ? "current-password" : "new-password"}
-                type="password" 
-                required 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                className={`w-full px-4 py-2 rounded-lg outline-none border focus:ring-2 transition-all ${inputClass}`} 
-              />
-              {isLogin && (
-                <div className="flex justify-between items-center mt-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className={`rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${darkMode ? 'bg-slate-800 border-slate-600' : ''}`}
-                      defaultChecked
-                    />
-                    <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Remember me</span>
-                  </label>
-                  <button type="button" onClick={() => { setIsReset(true); setMessage(''); }} className="text-xs font-medium hover:underline opacity-70 hover:opacity-100">Forgot Password?</button>
-                </div>
-              )}
-            </div>
-          )}
-          {message && <p className="text-sm text-center bg-indigo-50 text-indigo-700 p-2 rounded border border-indigo-100">{message}</p>}
-          <button type="submit" disabled={loading} className={`w-full font-bold py-3 rounded-xl transition-all flex justify-center items-center ${darkMode ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-[#ccccff] hover:brightness-95 text-[#4c3b4d]'}`}>
-            {loading ? <Loader2 className="animate-spin w-5 h-5" /> : (isReset ? 'Send Reset Link' : (isLogin ? 'Sign In' : 'Sign Up'))}
-          </button>
-        </form>
-        <div className="mt-6 text-center text-sm">
-          {isReset ? (
-             <button onClick={() => { setIsReset(false); setMessage(''); }} className="flex items-center justify-center gap-2 mx-auto hover:underline opacity-70 hover:opacity-100"><ArrowLeft className="w-3 h-3" /> Back to Sign In</button>
-          ) : (
-            <button onClick={() => { setIsLogin(!isLogin); setMessage(''); }} className="hover:underline opacity-70 hover:opacity-100">{isLogin ? "Don't have an account? Create one" : "Already have an account? Sign in"}</button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-// --- MAIN APP COMPONENT ---
+// --- MAIN APP COMPONENT (With Reviews, Ratings, Status Bar) ---
 function MainApp({ session, supabase, darkMode, toggleTheme }) {
   const [books, setBooks] = useState([]);
   const [filter, setFilter] = useState('all');
@@ -264,7 +184,6 @@ function MainApp({ session, supabase, darkMode, toggleTheme }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // State for Add/Edit
   const [editingId, setEditingId] = useState(null);
   const [newBook, setNewBook] = useState({ title: '', author: '', status: 'toread', rating: 0, review: '' });
 
@@ -383,7 +302,7 @@ function MainApp({ session, supabase, darkMode, toggleTheme }) {
   const StatusLabel = ({ status }) => {
     const config = STATUS_CONFIG.find(s => s.id === status) || STATUS_CONFIG[0];
     
-    // Badge Colors - INCREASED CONTRAST
+    // Badge Colors - Readable text
     const styles = {
       completed: "bg-green-200 text-green-900 dark:bg-green-900/30 dark:text-green-200",
       ongoing: "bg-indigo-200 text-indigo-900 dark:bg-indigo-900/30 dark:text-indigo-200",
@@ -515,7 +434,7 @@ function MainApp({ session, supabase, darkMode, toggleTheme }) {
             <form onSubmit={handleSaveBook} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1 opacity-50">Title</label>
-                <input autoFocus type="text" value={newBook.title} onChange={(e) => setNewBook({...newBook, title: e.target.value})} className={`w-full px-4 py-2 rounded-lg outline-none border focus:ring-2 transition-all ${inputClass}`} placeholder="e.g. Kafka on the Shore" />
+                <input autoFocus type="text" value={newBook.title} onChange={(e) => setNewBook({...newBook, title: e.target.value})} className={`w-full px-4 py-2 rounded-lg outline-none border focus:ring-2 transition-all ${inputClass}`} placeholder="e.g. Kafka on the Shore " />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1 opacity-50">Author</label>
